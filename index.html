@@ -4,23 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>School Lunch Registration Form</title>
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Custom CSS for colors -->
   <style>
     .card {
-      border: none;
+      border: none; /* Remove default border */
     }
     .card-header {
-      background-color: #f9f6eb;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+      background-color: #f9f6eb; /* Light cream color for header */
+      border-bottom: 1px solid rgba(0, 0, 0, 0.125); /* Optional: border for separation */
     }
     .card-body {
-      background-color: #f0f0f0;
+      background-color: #f0f0f0; /* Gray color for body */
     }
   </style>
 </head>
 <body>
   <div class="container mt-5">
     <div class="card">
+      <!-- Card Header with School Logo and Name -->
       <div class="card-header bg-light">
         <div class="d-flex align-items-center">
           <img src="logo2.png" alt="BRIGHT KIDS INTERNATIONAL SCHOOL" style="max-height: 40px; margin-right: 10px;">
@@ -46,19 +49,13 @@
             <label for="studentClass">Class of Student</label>
             <select class="form-control" id="studentClass" name="studentClass" required>
               <option value="">Select Class</option>
-              <option value="Creche">Creche</option>
-              <option value="Nursery 1">Nursery 1</option>
-              <option value="Nursery 2">Nursery 2</option>
-              <option value="KG 1">KG 1</option>
-              <option value="KG 2">KG 2</option>
-              <option value="Year 1">Year 1</option>
-              <option value="Year 2">Year 2</option>
-              <option value="Year 3">Year 3</option>
-              <option value="Year 4">Year 4</option>
-              <option value="Year 5">Year 5</option>
-              <option value="Year 6">Year 6</option>
-              <option value="Year 7">Year 7</option>
-              <option value="Year 8">Year 8</option>
+              <option value="Class 1">Class 1</option>
+              <option value="Class 2">Class 2</option>
+              <option value="Class 3">Class 3</option>
+              <option value="Class 4">Class 4</option>
+              <option value="Class 5">Class 5</option>
+              <option value="Class 6">Class 6</option>
+              <!-- Add more class options as needed -->
             </select>
           </div>
           <div class="form-group">
@@ -78,6 +75,8 @@
               <option value="two">Two or more additional children</option>
             </select>
           </div>
+          
+          <!-- Additional Children Section -->
           <div id="additionalChildrenSection" style="display: none;">
             <h5>Additional Child Information</h5>
             <div class="form-group">
@@ -89,8 +88,10 @@
               <input type="text" class="form-control" id="additionalStudentClass" name="additionalStudentClass">
             </div>
           </div>
+          
           <button type="submit" class="btn btn-primary">Submit Registration</button>
         </form>
+        <!-- Success Message -->
         <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
           Registration successful!
         </div>
@@ -98,11 +99,13 @@
     </div>
   </div>
 
+  <!-- Bootstrap JS and dependencies (jQuery, Popper.js) -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <script>
+    // Set current date and time in the registrationDate field
     $(document).ready(function() {
       var now = new Date();
       var year = now.getFullYear();
@@ -114,6 +117,7 @@
       $('#registrationDate').val(currentDateTime);
     });
 
+    // jQuery script to show additional children section based on selection
     $('#additionalChildren').change(function() {
       if ($(this).val() === 'none') {
         $('#additionalChildrenSection').hide();
@@ -126,9 +130,11 @@
       }
     });
 
+    // jQuery script to show success message upon form submission
     $('#registrationForm').submit(function(event) {
-      event.preventDefault();
+      event.preventDefault(); // Prevent default form submission
 
+      // Check if all required fields are filled
       var isValid = true;
       $('#registrationForm input[required], #registrationForm select[required]').each(function() {
         if ($(this).val() === '') {
@@ -144,29 +150,38 @@
         return;
       }
 
-      var file = $('#paymentSlip')[0].files[0];
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var formData = {
-          studentName: $('#studentName').val(),
-          parentContact: $('#parentContact').val(),
-          registrationDate: $('#registrationDate').val(),
-          studentClass: $('#studentClass').val(),
-          parentEmail: $('#parentEmail').val(),
-          fileContent: e.target.result.split(',')[1],
-          fileMimeType: file.type,
-          fileName: file.name,
-          additionalChildren: $('#additionalChildren').val(),
-          additionalStudentName: $('#additionalStudentName').val(),
-          additionalStudentClass: $('#additionalStudentClass').val()
-        };
+      // Gather form data
+      var formData = {
+        studentName: $('#studentName').val(),
+        parentContact: $('#parentContact').val(),
+        registrationDate: $('#registrationDate').val(),
+        studentClass: $('#studentClass').val(),
+        parentEmail: $('#parentEmail').val(),
+        additionalChildren: $('#additionalChildren').val()
+      };
 
-        $.ajax({
-          url: 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL',
-          type: 'POST',
-          data: JSON.stringify(formData),
-          contentType: 'application/json',
-          success: function(response) {
-            $('#successMessage').show();
-            $('#registrationForm').trigger
+      // Send data to Google Apps Script
+      $.ajax({
+        url: 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL', // Replace with your Google Apps Script web app URL
+        type: 'POST',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function(response) {
+          // Show success message
+          $('#successMessage').show();
+
+          // Clear form fields
+          $('#registrationForm').trigger('reset');
+
+          // Hide additional children section
+          $('#additionalChildrenSection').hide();
+        },
+        error: function() {
+          alert('There was an error submitting the form. Please try again.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
 
