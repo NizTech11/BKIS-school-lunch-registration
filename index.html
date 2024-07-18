@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BKIS - Lunch Registration Form</title>
+  <title>School Lunch Registration Form</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <!-- Custom CSS for colors -->
@@ -27,12 +27,11 @@
       <div class="card-header bg-light">
         <div class="d-flex align-items-center">
           <img src="logo2.png" alt="BRIGHT KIDS INTERNATIONAL SCHOOL" style="max-height: 40px; margin-right: 10px;">
-          <h4 class="mb-0">BRIGHT KIDS INTERNATIONAL SCHOOL</h4>
+          <h4 class="mb-0">School Lunch Registration Form</h4>
         </div>
       </div>
       <div class="card-body">
-        <h4 class="text-center mb-4">BKIS - Lunch Registration Form</h4>
-        <form id="registrationForm">
+        <form id="registrationForm" enctype="multipart/form-data">
           <div class="form-group">
             <label for="studentName">Name of Student</label>
             <input type="text" class="form-control" id="studentName" name="studentName" required>
@@ -62,20 +61,17 @@
               <option value="Year 6">Year 6</option>
               <option value="Year 7">Year 7</option>
               <option value="Year 8">Year 8</option>
-              <!-- Add more class options as needed -->
+              <!-- Add more options as needed -->
             </select>
           </div>
           <div class="form-group">
             <label for="parentEmail">Parent Email Address</label>
             <input type="email" class="form-control" id="parentEmail" name="parentEmail" required>
           </div>
-          <form id="registrationForm" enctype="multipart/form-data">
-            <!-- Form fields.... -->
           <div class="form-group">
             <label for="paymentSlip">Upload Payment Slip</label>
             <input type="file" class="form-control-file" id="paymentSlip" name="paymentSlip" required>
           </div>
-          </form>
           <hr>
           <div class="form-group">
             <label for="additionalChildren">Additional Children Registration</label>
@@ -100,11 +96,8 @@
           </div>
           
           <button type="submit" class="btn btn-primary">Submit Registration</button>
+          <div id="successMessage" class="alert alert-success mt-3" style="display: none;">Registration successful!</div>
         </form>
-        <!-- Success Message -->
-        <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
-          Registration successful!
-        </div>
       </div>
     </div>
   </div>
@@ -115,8 +108,8 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <script>
-    // Set current date and time in the registrationDate field
     $(document).ready(function() {
+      // Set current date and time in the registrationDate field
       var now = new Date();
       var year = now.getFullYear();
       var month = ('0' + (now.getMonth() + 1)).slice(-2);
@@ -125,73 +118,66 @@
       var minute = ('0' + now.getMinutes()).slice(-2);
       var currentDateTime = year + '-' + month + '-' + day + 'T' + hour + ':' + minute;
       $('#registrationDate').val(currentDateTime);
-    });
 
-    // jQuery script to show additional children section based on selection
-    $('#additionalChildren').change(function() {
-      if ($(this).val() === 'none') {
-        $('#additionalChildrenSection').hide();
-        $('#additionalStudentName').prop('required', false);
-        $('#additionalStudentClass').prop('required', false);
-      } else {
-        $('#additionalChildrenSection').show();
-        $('#additionalStudentName').prop('required', true);
-        $('#additionalStudentClass').prop('required', true);
-      }
-    });
-
-    // jQuery script to show success message upon form submission
-    $('#registrationForm').submit(function(event) {
-      event.preventDefault(); // Prevent default form submission
-
-      // Check if all required fields are filled
-      var isValid = true;
-      $('#registrationForm input[required], #registrationForm select[required]').each(function() {
-        if ($(this).val() === '') {
-          isValid = false;
-          $(this).addClass('is-invalid');
+      // jQuery script to show additional children section based on selection
+      $('#additionalChildren').change(function() {
+        if ($(this).val() === 'none') {
+          $('#additionalChildrenSection').hide();
+          $('#additionalStudentName').prop('required', false);
+          $('#additionalStudentClass').prop('required', false);
         } else {
-          $(this).removeClass('is-invalid');
+          $('#additionalChildrenSection').show();
+          $('#additionalStudentName').prop('required', true);
+          $('#additionalStudentClass').prop('required', true);
         }
       });
 
-      if (!isValid) {
-        alert('Please fill out all required fields.');
-        return;
-      }
+      // Form submission handling
+      $('#registrationForm').submit(function(event) {
+        event.preventDefault(); // Prevent default form submission
 
-      // Gather form data
-      var formData = {
-        studentName: $('#studentName').val(),
-        parentContact: $('#parentContact').val(),
-        registrationDate: $('#registrationDate').val(),
-        studentClass: $('#studentClass').val(),
-        parentEmail: $('#parentEmail').val(),
-        additionalChildren: $('#additionalChildren').val()
-      };
+        // Check if all required fields are filled
+        var isValid = true;
+        $('#registrationForm input[required], #registrationForm select[required]').each(function() {
+          if ($(this).val() === '') {
+            isValid = false;
+            $(this).addClass('is-invalid');
+          } else {
+            $(this).removeClass('is-invalid');
+          }
+        });
 
-      // Send data to Google Apps Script
-      $.ajax({
-        url: 'https://script.google.com/macros/s/AKfycbx4_xJct2wxk3LflNCwQyuLvDlgC17m2V834JIIig2ivtUAFRQxgDC3BmH6Gv2fuNtE/exec', // Replace with your Google Apps Script web app URL
-        type: 'POST',
-        data: JSON.stringify(formData),
-        contentType: 'application/json',
-        success: function(response) {
-          // Show success message
-          $('#successMessage').show();
-
-          // Clear form fields
-          $('#registrationForm').trigger('reset');
-
-          // Hide additional children section
-          $('#additionalChildrenSection').hide();
-        },
-        error: function() {
-          alert('There was an error submitting the form. Please try again.');
+        if (!isValid) {
+          alert('Please fill out all required fields.');
+          return;
         }
+
+        // Gather form data
+        var formData = new FormData(this);
+
+        // Send data to Google Apps Script
+        $.ajax({
+          url: 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL', // Replace with your Google Apps Script web app URL
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            // Show success message
+            $('#successMessage').show();
+
+            // Clear form fields
+            $('#registrationForm').trigger('reset');
+
+            // Hide additional children section
+            $('#additionalChildrenSection').hide();
+          },
+          error: function() {
+            alert('There was an error submitting the form. Please try again.');
+          }
+        });
       });
     });
   </script>
 </body>
 </html>
-
