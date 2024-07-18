@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Lunch Registration Form</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Custom CSS for colors -->
+  <style>
+    .card {
+      border: none; /* Remove default border */
+    }
+    .card-header {
+      background-color: #f9f6eb; /* Light cream color for header */
+      border-bottom: 1px solid rgba(0, 0, 0, 0.125); /* Optional: border for separation */
+    }
+    .card-body {
+      background-color: #f0f0f0; /* Gray color for body */
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="card">
+      <!-- Card Header with School Logo and Name -->
+      <div class="card-header bg-light">
+        <div class="d-flex align-items-center">
+          <img src="logo2.png" alt="BRIGHT KIDS INTERNATIONAL SCHOOL" style="max-height: 40px; margin-right: 10px;">
+          <h4 class="mb-0">BRIGHT KIDS INTERNATIONAL SCHOOL</h4>
+        </div>
+      </div>
+      <div class="card-body">
+        <h4 class="text-center mb-4">School Lunch Registration Form</h4>
+        <form id="registrationForm">
+          <div class="form-group">
+            <label for="studentName">Name of Student</label>
+            <input type="text" class="form-control" id="studentName" name="studentName" required>
+          </div>
+          <div class="form-group">
+            <label for="parentContact">Parent Contact Number</label>
+            <input type="tel" class="form-control" id="parentContact" name="parentContact" required>
+          </div>
+          <div class="form-group">
+            <label for="registrationDate">Date of Registration</label>
+            <input type="datetime-local" class="form-control" id="registrationDate" name="registrationDate" required>
+          </div>
+          <div class="form-group">
+            <label for="studentClass">Class of Student</label>
+            <input type="text" class="form-control" id="studentClass" name="studentClass" required>
+          </div>
+          <div class="form-group">
+            <label for="parentEmail">Parent Email Address</label>
+            <input type="email" class="form-control" id="parentEmail" name="parentEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="paymentSlip">Upload Payment Slip</label>
+            <input type="file" class="form-control-file" id="paymentSlip" name="paymentSlip" required>
+          </div>
+          <hr>
+          <div class="form-group">
+            <label for="additionalChildren">Additional Children Registration</label>
+            <select class="form-control" id="additionalChildren" name="additionalChildren">
+              <option value="none">None</option>
+              <option value="one">One additional child</option>
+              <option value="two">Two or more additional children</option>
+            </select>
+          </div>
+          
+          <!-- Additional Children Section -->
+          <div id="additionalChildrenSection" style="display: none;">
+            <h5>Additional Child Information</h5>
+            <div class="form-group">
+              <label for="additionalStudentName">Name of Additional Student</label>
+              <input type="text" class="form-control" id="additionalStudentName" name="additionalStudentName">
+            </div>
+            <div class="form-group">
+              <label for="additionalStudentClass">Class of Additional Student</label>
+              <input type="text" class="form-control" id="additionalStudentClass" name="additionalStudentClass">
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Submit Registration</button>
+        </form>
+        <!-- Success Message -->
+        <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
+          Registration successful!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies (jQuery, Popper.js) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Set current date and time in the registrationDate field
+    $(document).ready(function() {
+      var now = new Date();
+      var year = now.getFullYear();
+      var month = ('0' + (now.getMonth() + 1)).slice(-2);
+      var day = ('0' + now.getDate()).slice(-2);
+      var hour = ('0' + now.getHours()).slice(-2);
+      var minute = ('0' + now.getMinutes()).slice(-2);
+      var currentDateTime = year + '-' + month + '-' + day + 'T' + hour + ':' + minute;
+      $('#registrationDate').val(currentDateTime);
+    });
+
+    // jQuery script to show additional children section based on selection
+    $('#additionalChildren').change(function() {
+      if ($(this).val() === 'none') {
+        $('#additionalChildrenSection').hide();
+        $('#additionalStudentName').prop('required', false);
+        $('#additionalStudentClass').prop('required', false);
+      } else {
+        $('#additionalChildrenSection').show();
+        $('#additionalStudentName').prop('required', true);
+        $('#additionalStudentClass').prop('required', true);
+      }
+    });
+
+    // jQuery script to show success message upon form submission
+    $('#registrationForm').submit(function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Check if all required fields are filled
+      var isValid = true;
+      $('#registrationForm input[required], #registrationForm select[required]').each(function() {
+        if ($(this).val() === '') {
+          isValid = false;
+          $(this).addClass('is-invalid');
+        } else {
+          $(this).removeClass('is-invalid');
+        }
+      });
+
+      if (!isValid) {
+        alert('Please fill out all required fields.');
+        return;
+      }
+
+      // Gather form data
+      var formData = {
+        studentName: $('#studentName').val(),
+        parentContact: $('#parentContact').val(),
+        registrationDate: $('#registrationDate').val(),
+        studentClass: $('#studentClass').val(),
+        parentEmail: $('#parentEmail').val(),
+        additionalChildren: $('#additionalChildren').val()
+      };
+
+      // Send data to Google Apps Script
+      $.ajax({
+        url: 'https://script.google.com/u/0/home/projects/12mEtGO9F1fi1Y-4gX0puLVNvuGrowyfAnJkYjzNIYqYw4SXvMzEQW5xU/edit', // Replace with your Google Apps Script web app URL
+        type: 'POST',
+        data: JSON.stringify(formData),
+        contentType: 'application/json',
+        success: function(response) {
+          // Show success message
+          $('#successMessage').show();
+
+          // Clear form fields
+          $('#registrationForm').trigger('reset');
+
+          // Hide additional children section
+          $('#additionalChildrenSection').hide();
+        },
+        error: function() {
+          alert('There was an error submitting the form. Please try again.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
